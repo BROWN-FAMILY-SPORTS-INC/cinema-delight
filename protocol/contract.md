@@ -14,6 +14,7 @@ A scene is one HTML page that draws a 1920×1080 frame as **a pure function of o
   ```
 
   `seek` must draw synchronously and return `true`; a scene may ignore `id`. `?t=9.2` in the URL freezes the scene at that second; with no query it plays live in a loop; a click pauses it.
+- **Say where the words are (recommended).** `briefStages.boxes(t)` returns `[{kind: "text" | "subject", id, x, y, w, h}]` in frame pixels for what is on screen at `t`. `film.py check` then refuses words that leave the frame or sit on the subject. A scene without it is reported as unchecked, never as passing.
 - **Draw at 1920×1080** and scale to fit when watched. A different size is a decision recorded in the film's `spec.md`.
 - **Every number on screen comes from `facts.json`.** If a number was not measured, it is not shown.
 

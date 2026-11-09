@@ -124,6 +124,37 @@ def number_problems(d: Path) -> list[str]:
     return probs
 
 
+def word_problems(d: Path) -> tuple[list[str], bool]:
+    """Ask the scene where its words and its subject are at the middle of every title, if it says.
+
+    A scene may expose briefStages.boxes(t) -> [{kind: "text" | "subject", x, y, w, h, id?}] in frame pixels
+    (protocol/contract.md). Words must sit inside the frame and off the subject. A scene that does not expose it
+    is unchecked, which is reported as such and never as a pass."""
+    beats, _ = moments.film_beats(d)
+    secs = [round((b["film_t"] + b["film_t"] - b["t"] + b["until"]) / 2, 3) for b in beats if b.get("kind") == "title" and b.get("until")]
+    if not secs:
+        return [], True
+    expr = ("(() => { if (!window.briefStages || typeof briefStages.boxes !== 'function') return null; const out = {};"
+            f" for (const t of {json.dumps(secs)}) {{ briefStages.seek('stage', t); out[t] = briefStages.boxes(t); }} return out; }})()")
+    r = run_json(["node", "tools/pagecheck.mjs", scene_url(d), expr, "20"])
+    boxes = r.get("value")
+    if boxes is None:
+        return [], False
+    probs = []
+    W, H = 1920, 1080
+    for t, bs in boxes.items():
+        texts = [b for b in bs if b.get("kind") == "text"]
+        subjects = [b for b in bs if b.get("kind") == "subject"]
+        for b in texts:
+            label = b.get("id", "words")
+            if b["x"] < 0 or b["y"] < 0 or b["x"] + b["w"] > W or b["y"] + b["h"] > H:
+                probs.append(f"at {t} s, {label} runs outside the frame")
+            for sb in subjects:
+                if b["x"] < sb["x"] + sb["w"] and sb["x"] < b["x"] + b["w"] and b["y"] < sb["y"] + sb["h"] and sb["y"] < b["y"] + b["h"]:
+                    probs.append(f"at {t} s, {label} sits on {sb.get('id', 'the subject')}")
+    return probs, True
+
+
 def cmd_check(name: str) -> int:
     d = film(name)
     if not d.is_dir():
@@ -160,12 +191,17 @@ def cmd_check(name: str) -> int:
         r = run_json(["node", "tools/pagecheck.mjs", scene_url(d), "typeof window.briefStages.seek", "20"])
         if r.get("value") != "function":
             problems.append("the scene does not expose window.briefStages.seek")
+    words_checked = None
     if "beats" in done:
         problems += number_problems(d)
+        if scene.exists():
+            wp, words_checked = word_problems(d)
+            problems += wp
     left = moments.open_notes(name)["open"] if (d / "moments.json").exists() else []
     if left:
         problems.append(f"{len(left)} notes have no answer: python3 tools/moments.py {name} open")
-    return out(ok=not problems, done=done, next=nxt, problems=problems)
+    return out(ok=not problems, done=done, next=nxt, problems=problems,
+               words=("checked" if words_checked else "unchecked: the scene does not expose briefStages.boxes(t)") if words_checked is not None else None)
 
 
 def stills_at(d: Path, seconds: list[float], outdir: Path) -> dict:

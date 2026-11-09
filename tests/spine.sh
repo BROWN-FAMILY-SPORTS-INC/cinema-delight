@@ -27,6 +27,15 @@ sed -i 's/3 SECONDS/4 SECONDS/' "$d/beats.json"
 python3 tools/film.py check "$name" | j '["problems"]' | has "no fact"
 sed -i 's/4 SECONDS/3 SECONDS/' "$d/beats.json"
 
+echo "a scene that says where its words are: clear, then on the subject" >&2
+python3 tools/film.py check "$name" | j '["words"]' | has unchecked
+sed -i 's|^window.briefStages = { seek: (id, t) => { frozen = true; render(t); return true; } };|window.briefStages = { seek: (id, t) => { frozen = true; render(t); return true; }, boxes: (t) => [{ kind: "text", id: "clock", x: 760, y: 440, w: 400, h: 100 }, { kind: "subject", id: "bar", x: 160, y: 700, w: 1600, h: 24 }] };|' "$d/scene/scene.html"
+python3 tools/film.py check "$name" | j '["words"]' | has "checked"
+python3 tools/film.py check "$name" | j '["problems"]' | has "[]"
+sed -i 's|y: 440, w: 400, h: 100|y: 650, w: 400, h: 100|' "$d/scene/scene.html"
+python3 tools/film.py check "$name" | j '["problems"]' | has "sits on bar"
+sed -i 's|y: 650, w: 400, h: 100|y: 440, w: 400, h: 100|' "$d/scene/scene.html"
+
 python3 tools/film.py board "$name" | j '["ok"]' | has True
 [[ -s "$d/board.html" && -s "$d/board/sheet.jpg" ]]
 python3 tools/film.py draft "$name" --fps 5 --jobs 2 | j '["ok"]' | has True
