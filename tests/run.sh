@@ -9,6 +9,9 @@ step() { printf '\n== %s\n' "$*" >&2; }
 step "leaks"
 python3 tests/check_leaks.py
 
+step "every path the documents mention exists"
+python3 tests/docs.py
+
 step "render the fixture: 3 s at 5 fps"
 node tools/render.mjs "file://$PWD/tests/fixture/grey.html" "$work/frames" 5 3 0 1920 1080
 frames=$(ls "$work/frames" | wc -l)
@@ -59,6 +62,9 @@ tests/spine.sh
 
 step "sound: master, options, sync, narration, Ardour"
 tests/sound.sh
+
+step "the demo kit: a real capture drawn in a scene"
+tests/demo.sh
 
 step "render lock"
 python3 tools/locked.py true
