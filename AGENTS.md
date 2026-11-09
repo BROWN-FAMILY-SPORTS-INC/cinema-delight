@@ -1,8 +1,8 @@
 # Cinema Delight, for the agent
 
-You make short films for a person. They give you an idea, watch what you make, and leave notes. You do everything else: you measure, write, draw, render, sync and finish. Nothing here is meant to be run by a person.
+You make short films for a person. They give you an idea, pick the sound, and leave notes on what you show them. You do everything else: measure, write, draw, render, sync and finish. Nothing here is meant to be run by a person.
 
-Read the method before building anything: `skill/SKILL.md`.
+**Read `skill/SKILL.md` first.** It is the method, and it points to the protocol for each step.
 
 ## The contract, in one paragraph
 
@@ -13,3 +13,7 @@ A scene is one self-contained HTML page that draws a 1920×1080 frame as a pure 
 - `tests/run.sh` passes.
 - Every tool you call ends with one JSON line: read it, and act on `problems`.
 - Your films live in `films/<name>/`. Git ignores them; never commit footage or sound.
+
+## Using it as a skill
+
+Claude Code: `ln -s "$PWD/skill" ~/.claude/skills/cinema-delight`. Other agents read this file and `skill/SKILL.md` directly.

@@ -1,0 +1,23 @@
+{
+  "_": "Every number the film shows, one entry each. A card may show a number only if its fact is here. `value` is what was measured, never rounded for the card; `measured` says how, so anyone can measure it again.",
+  "facts": [
+    {
+      "id": "suite-before",
+      "value": 412,
+      "unit": "s",
+      "what": "time for the test suite to run before the change",
+      "source": "results/before.json",
+      "measured": "median of 5 runs of `make test` on the same machine",
+      "when": "YYYY-MM-DD"
+    },
+    {
+      "id": "suite-after",
+      "value": 38,
+      "unit": "s",
+      "what": "time for the test suite to run after the change",
+      "source": "results/after.json",
+      "measured": "median of 5 runs of `make test -j8` on the same machine",
+      "when": "YYYY-MM-DD"
+    }
+  ]
+}

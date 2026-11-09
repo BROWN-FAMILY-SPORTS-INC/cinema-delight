@@ -1,0 +1,28 @@
+{
+  "format": "beats/1",
+  "_": "The film's beats on its clock. Each part has its own clock, starting at 0. kind is title (a card, shown from t to until), action (something done on screen), answer (what the subject does in reply), or emotion (where the story stands: open, setup, hang, breath, turn, hit, fall, summit, coda, tie-back). sound is a word for what should be heard, or none. visible is never typed: the sync check measures it. Check with: node tools/beats.mjs check <this file>",
+  "parts": [
+    {
+      "id": "slow",
+      "title": "The slow suite",
+      "dur": 14,
+      "beats": [
+        { "id": "open", "t": 0, "kind": "emotion", "emotion": "open", "sound": "open", "what": "a terminal; a test run starts" },
+        { "id": "name", "t": 0.5, "kind": "title", "text": "THE SLOW SUITE", "until": 4.5, "what": "the subject, said first" },
+        { "id": "wait", "t": 5, "kind": "emotion", "emotion": "hang", "hold": 4, "sound": "none", "what": "the progress bar crawls" },
+        { "id": "time", "t": 9, "kind": "title", "text": "412 SECONDS", "until": 13, "fact": "suite-before" }
+      ]
+    },
+    {
+      "id": "fast",
+      "title": "The fast suite",
+      "dur": 12,
+      "beats": [
+        { "id": "change", "t": 0, "kind": "action", "what": "one flag is added to the command" },
+        { "id": "run", "t": 1, "kind": "answer", "sound": "success", "what": "the suite finishes" },
+        { "id": "after", "t": 2, "kind": "title", "text": "38 SECONDS", "until": 7, "fact": "suite-after" },
+        { "id": "close", "t": 8, "kind": "emotion", "emotion": "coda", "sound": "coda", "what": "the terminal, quiet" }
+      ]
+    }
+  ]
+}

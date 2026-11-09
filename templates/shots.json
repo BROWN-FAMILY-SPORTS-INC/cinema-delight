@@ -1,0 +1,10 @@
+{
+  "_": "Only for a film whose camera moves. Read by tools/camera.js in the scene and on the storyboard. Format in the comment at the top of tools/camera.js.",
+  "format": { "w": 1920, "h": 1080 },
+  "views": { "screen": { "x": 480, "y": 200, "w": 960 } },
+  "shots": [
+    { "id": "wide-open", "dur": 4, "story": [0, 4], "camera": "wide" },
+    { "id": "punch", "dur": 3, "story": 4.5, "camera": [[0, "wide"], [0, "screen"]], "on": "the progress bar" },
+    { "id": "slow", "dur": 6, "story": [4.5, 5.4], "camera": [[0, "screen"], [6, { "at": [960, 540], "zoom": 2.5 }]] }
+  ]
+}
