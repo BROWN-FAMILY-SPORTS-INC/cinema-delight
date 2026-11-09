@@ -29,6 +29,7 @@ PATTERNS = {
 }
 SCENE_URL = re.compile(r"""(?:src|href)\s*=\s*["']https?://|url\(\s*["']?https?://|fetch\(\s*["']https?://|@import\s+["']?https?://""")
 ALLOW_EMAIL = {"noreply@github.com"}
+RESERVED = (".invalid", "@example.com", "@example.org", "@example.net")   # test domains that can never be anyone's
 
 
 def tracked(root: Path) -> list[Path]:
@@ -58,7 +59,7 @@ def main() -> int:
         for n, line in enumerate(text.splitlines(), 1):
             for what, rx in PATTERNS.items():
                 for m in rx.finditer(line):
-                    if what == "email" and m.group(0) in ALLOW_EMAIL:
+                    if what == "email" and (m.group(0) in ALLOW_EMAIL or m.group(0).endswith(RESERVED)):
                         continue
                     findings.append({"file": rel, "line": n, "what": what, "text": m.group(0)})
             if ext == ".html" and SCENE_URL.search(line):

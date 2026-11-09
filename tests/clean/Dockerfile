@@ -4,9 +4,9 @@ FROM node:22-bookworm-slim
 RUN apt-get update \
  && apt-get install -y --no-install-recommends chromium ffmpeg python3 git ca-certificates fonts-dejavu-core \
  && rm -rf /var/lib/apt/lists/*
-RUN useradd -m maker
+RUN useradd -m maker && mkdir /work && chown maker /work
 USER maker
-WORKDIR /home/maker/cinema-delight
+WORKDIR /work
 COPY --chown=maker:maker . .
 RUN git init -q && git add -A && git -c user.name=test -c user.email=test@example.invalid commit -qm clean
 ENV CINEMA_MIN_FREE_BYTES=1073741824
