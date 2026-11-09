@@ -9,5 +9,6 @@ USER maker
 WORKDIR /work
 COPY --chown=maker:maker . .
 RUN git init -q && git add -A && git -c user.name=test -c user.email=test@example.invalid commit -qm clean
-ENV CINEMA_MIN_FREE_BYTES=1073741824
+# A container blocks the browser's own sandbox; the container is the boundary here.
+ENV CINEMA_MIN_FREE_BYTES=1073741824 CINEMA_BROWSER_FLAGS=--no-sandbox
 CMD ["tests/run.sh"]

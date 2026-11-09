@@ -11,6 +11,9 @@
 // chromium-browser, google-chrome-stable, google-chrome on PATH. Each browser runs in its own process
 // group with a throwaway profile, and both are removed when the tool exits, however it exits: a
 // headless browser left behind keeps its memory and its profile until someone notices.
+//
+// CINEMA_BROWSER_FLAGS adds flags, space-separated. Inside a container that blocks the browser's own sandbox,
+// set it to --no-sandbox; the container is then the boundary (tests/clean/Dockerfile does this).
 
 import { spawn, execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
@@ -39,16 +42,19 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(sig, () => process
 export async function open({ w = 1920, h = 1080, timeoutMs = 60000, gesture = false } = {}) {
   const port = 9300 + Math.floor(Math.random() * 600);
   const profile = mkdtempSync(join(tmpdir(), 'cdp-'));
+  const extra = (process.env.CINEMA_BROWSER_FLAGS || '').split(/\s+/).filter(Boolean);
   const child = spawn(findBrowser(), ['--headless=new', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--no-first-run',
-    '--autoplay-policy=no-user-gesture-required', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
-    `--window-size=${w},${h}`, 'about:blank'], { stdio: 'ignore', detached: true });
+    '--autoplay-policy=no-user-gesture-required', ...extra, `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
+    `--window-size=${w},${h}`, 'about:blank'], { stdio: ['ignore', 'ignore', 'pipe'], detached: true });
+  let said = '';
+  child.stderr.on('data', (d) => { said = (said + d).slice(-1500); });
   live.set(child, profile);
   let target;
   for (let i = 0; i < 100 && !target; i++) {
     try { target = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })).json(); }
     catch { await sleep(200); }
   }
-  if (!target) { reap(child); throw new Error('the browser never opened its DevTools port'); }
+  if (!target) { reap(child); throw new Error('the browser never opened its DevTools port; it said: ' + (said.trim().split('\n').slice(-4).join(' | ') || 'nothing')); }
   const ws = new WebSocket(target.webSocketDebuggerUrl);
   const pending = new Map(); let seq = 0;
   ws.onmessage = (e) => { const m = JSON.parse(e.data); if (m.id && pending.has(m.id)) { pending.get(m.id)(m); pending.delete(m.id); } };
