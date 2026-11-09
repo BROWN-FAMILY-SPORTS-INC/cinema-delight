@@ -57,6 +57,9 @@ node tools/camera.js "$work/shots.json" 1 | python3 -c 'import json,sys; r=json.
 step "a film through every step"
 tests/spine.sh
 
+step "sound: master, options, sync, narration, Ardour"
+tests/sound.sh
+
 step "render lock"
 python3 tools/locked.py true
 
