@@ -9,7 +9,7 @@ browser="${CHROME:-$(command -v chromium || command -v chromium-browser || comma
 sep='?'; [[ "$url" == *\?* ]] && sep='&'
 profile="$(mktemp -d)"
 trap 'rm -rf "$profile"' EXIT
-timeout 60 "$browser" --headless=new --disable-gpu --hide-scrollbars --no-first-run --user-data-dir="$profile" \
+timeout 60 "$browser" --headless=new --disable-gpu --disable-dev-shm-usage --hide-scrollbars --no-first-run --user-data-dir="$profile" \
   --window-size="$size" --virtual-time-budget=2500 --screenshot="$out" "${url}${sep}t=${t}" 2>/dev/null
 if [[ -s "$out" ]]; then printf '{"ok": true, "wrote": ["%s"], "problems": []}\n' "$out"
 else printf '{"ok": false, "wrote": [], "problems": ["no still written"]}\n'; exit 1; fi

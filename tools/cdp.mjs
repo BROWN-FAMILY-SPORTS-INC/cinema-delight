@@ -39,7 +39,7 @@ for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) process.on(sig, () => process
 export async function open({ w = 1920, h = 1080, timeoutMs = 60000, gesture = false } = {}) {
   const port = 9300 + Math.floor(Math.random() * 600);
   const profile = mkdtempSync(join(tmpdir(), 'cdp-'));
-  const child = spawn(findBrowser(), ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--no-first-run',
+  const child = spawn(findBrowser(), ['--headless=new', '--disable-gpu', '--disable-dev-shm-usage', '--hide-scrollbars', '--no-first-run',
     '--autoplay-policy=no-user-gesture-required', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
     `--window-size=${w},${h}`, 'about:blank'], { stdio: 'ignore', detached: true });
   live.set(child, profile);
