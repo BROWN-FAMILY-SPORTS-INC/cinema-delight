@@ -10,3 +10,4 @@ out/
 *.ogg
 __pycache__/
 .cache/
+.frames/

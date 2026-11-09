@@ -54,6 +54,9 @@ step "camera samples"
 printf '{"format":{"w":1920,"h":1080},"shots":[{"dur":2,"story":[0,1],"camera":[[0,"wide"],[2,{"at":[960,540],"zoom":2}]]}]}' > "$work/shots.json"
 node tools/camera.js "$work/shots.json" 1 | python3 -c 'import json,sys; r=json.load(sys.stdin); assert r["total"]==2 and r["samples"][-1]["zoom"]==2, r'
 
+step "a film through every step"
+tests/spine.sh
+
 step "render lock"
 python3 tools/locked.py true
 

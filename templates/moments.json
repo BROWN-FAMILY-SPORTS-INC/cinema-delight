@@ -1,8 +1,13 @@
 {
-  "_": "One row per note the person left, in the order they matter. said is their words, verbatim. t is the film second it lands on, measured from beats.json or the sound, never guessed. answer is what you changed, or why nothing changed; a row with no answer is still open.",
-  "round": 1,
-  "notes_file": "notes/round-1.txt",
-  "moments": [
-    { "id": "title-too-fast", "said": "<their words>", "t": 0.5, "frame": "the title card", "answer": "" }
+  "_": "Written by tools/moments.py save, one round per batch of notes the person pasted back. said is their words, verbatim. t is the film second the note names, or the second of the beat it was left on. Fill answer with what you changed, or why nothing changed; a moment with no answer is still open.",
+  "rounds": [
+    {
+      "round": 1,
+      "notes_file": "notes/round-1.txt",
+      "on_draft": 1,
+      "moments": [
+        { "id": "r1-1", "on": "name", "said": "<their words>", "t": 0.5, "frame": "the subject, said first", "answer": "" }
+      ]
+    }
   ]
 }
