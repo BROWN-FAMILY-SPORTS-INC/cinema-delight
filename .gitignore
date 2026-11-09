@@ -1,0 +1,12 @@
+films/*
+!films/README.md
+frames/
+out/
+*.mp4
+*.webm
+*.wav
+*.flac
+*.mp3
+*.ogg
+__pycache__/
+.cache/

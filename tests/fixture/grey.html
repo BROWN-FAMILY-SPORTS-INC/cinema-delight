@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>test fixture</title>
+<!-- The one scene in this repository, and it is a test, not a look. It proves the contract:
+     one clock t, a seek API, seeded randomness, nothing loaded from outside. Grey on purpose. -->
+<style>html,body{margin:0;background:#202020;overflow:hidden}canvas{display:block;width:100vw;height:100vh;object-fit:contain}</style>
+</head><body><canvas id="c" width="1920" height="1080"></canvas>
+<script>
+const W = 1920, H = 1080, END = 3;
+const ctx = document.getElementById('c').getContext('2d');
+// seeded randomness: frame n is the same picture on every render
+function rng(seed) { return () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; }
+const dots = (() => { const r = rng(7); return Array.from({ length: 40 }, () => ({ x: r() * W, y: r() * H, s: 4 + r() * 10 })); })();
+
+function render(t) {
+  ctx.fillStyle = '#202020'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#3a3a3a';
+  for (const d of dots) ctx.fillRect(d.x, (d.y + t * 60) % H, d.s, d.s);
+  const p = Math.min(1, t / END);
+  ctx.fillStyle = '#8a8a8a'; ctx.fillRect(160, 700, (W - 320) * p, 24);
+  ctx.strokeStyle = '#5a5a5a'; ctx.lineWidth = 2; ctx.strokeRect(160, 700, W - 320, 24);
+  ctx.fillStyle = '#d0d0d0'; ctx.font = '96px monospace'; ctx.textAlign = 'center';
+  ctx.fillText(`t = ${t.toFixed(2)} s`, W / 2, 520);
+}
+
+let frozen = false, start = performance.now();
+window.briefStages = { seek: (id, t) => { frozen = true; render(t); return true; } };
+const q = new URLSearchParams(location.search);
+if (q.has('t')) { frozen = true; render(+q.get('t')); }
+else (function loop() { if (!frozen) { render(((performance.now() - start) / 1000) % END); requestAnimationFrame(loop); } })();
+document.addEventListener('click', () => { frozen = !frozen; });
+</script></body></html>
